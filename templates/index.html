@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gerenciador de Tarefas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{color-scheme:light dark;--bg:#f6f7f9;--surface:#fff;--borda:#e4e7ec;--texto:#101828;--muted:#667085;--pri:#2563eb;--pri-h:#1d4ed8;--prit:#fff;--err:#b42318;--errb:#fef3f2;
+      --pend:#b54708;--pendb:#fffaeb;--prog:#175cd3;--progb:#eff8ff;--ok:#067647;--okb:#ecfdf3;--sombra:0 1px 2px rgba(16,24,40,.06)}
+    @media (prefers-color-scheme:dark){:root{--bg:#0b0f17;--surface:#131a26;--borda:#243044;--texto:#e6eaf2;--muted:#93a0b5;--pri:#4f8cff;--pri-h:#74a3ff;--prit:#06101f;--err:#f97066;--errb:rgba(249,112,102,.12);
+      --pend:#fdb022;--pendb:rgba(253,176,34,.12);--prog:#7cb2ff;--progb:rgba(79,140,255,.14);--ok:#47cd89;--okb:rgba(71,205,137,.12);--sombra:none}}
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100vh;background:var(--bg);color:var(--texto);font-family:'Inter',system-ui,'Segoe UI',Arial,sans-serif;line-height:1.5;-webkit-font-smoothing:antialiased}
+    .container{max-width:1040px;margin:0 auto;padding:32px 20px 64px}
+    header{padding-bottom:20px;border-bottom:1px solid var(--borda);margin-bottom:24px}
+    header h1{margin:0;font-size:1.6rem;font-weight:700;letter-spacing:-.02em}
+    .sub{color:var(--muted);font-size:.9rem;margin:2px 0 0}
+    .painel{background:var(--surface);border:1px solid var(--borda);border-radius:12px;padding:20px;box-shadow:var(--sombra)}
+    .painel h2{margin:0 0 14px;font-size:1rem;font-weight:600}
+    .form-nova{display:grid;grid-template-columns:2fr 1fr;gap:14px}
+    .campo{display:flex;flex-direction:column;gap:6px}.campo.largo{grid-column:1/-1}
+    .campo label{font-size:.82rem;font-weight:500;color:var(--muted)}
+    .form-acoes{grid-column:1/-1;display:flex;justify-content:flex-end}
+    input,select,textarea{width:100%;padding:9px 12px;border:1px solid var(--borda);border-radius:8px;background:var(--surface);color:var(--texto);font:inherit;font-size:.95rem;transition:border-color .15s,box-shadow .15s}
+    textarea{resize:vertical;min-height:72px}
+    select option{background:var(--surface);color:var(--texto)}
+    input:focus,select:focus,textarea:focus,button:focus-visible{outline:none;border-color:var(--pri);box-shadow:0 0 0 3px color-mix(in srgb,var(--pri) 25%,transparent)}
+    .btn{border:1px solid var(--pri);border-radius:8px;padding:9px 18px;font:inherit;font-weight:600;font-size:.92rem;cursor:pointer;color:var(--prit);background:var(--pri);transition:background .15s}
+    .btn:hover{background:var(--pri-h)}
+    .btn-secundario{background:transparent;color:var(--texto);border-color:var(--borda)}.btn-secundario:hover{background:var(--bg)}
+    .filtros{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:24px 0 12px}
+    .chip{text-align:left;background:var(--surface);border:1px solid var(--borda);border-radius:12px;padding:14px 16px;cursor:pointer;font:inherit;color:var(--texto);box-shadow:var(--sombra);transition:border-color .15s}
+    .chip:hover{border-color:var(--pri)}
+    .chip.ativo{border-color:var(--pri);box-shadow:0 0 0 1px var(--pri)}
+    .chip-n{display:block;font-size:1.7rem;font-weight:700;line-height:1.2;font-variant-numeric:tabular-nums}
+    .chip-l{font-size:.85rem;color:var(--muted)}
+    .barra{margin:0 0 14px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+    .card{background:var(--surface);border:1px solid var(--borda);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:10px;box-shadow:var(--sombra);transition:border-color .15s}
+    .card:hover{border-color:color-mix(in srgb,var(--pri) 50%,var(--borda))}
+    .card h3{margin:0;font-size:1.02rem;font-weight:600;word-break:break-word}
+    .card p{margin:0;color:var(--muted);font-size:.92rem;word-break:break-word;white-space:pre-wrap}
+    .card-topo{display:flex;justify-content:space-between;align-items:center}
+    .id{color:var(--muted);font-size:.8rem;font-variant-numeric:tabular-nums}
+    .card footer{margin-top:auto;display:flex;justify-content:space-between;align-items:center;gap:8px;padding-top:12px;border-top:1px solid var(--borda)}
+    .card footer small{color:var(--muted);font-size:.78rem;font-variant-numeric:tabular-nums}
+    .acoes{display:flex;gap:6px}
+    .acoes button{border:1px solid var(--borda);background:transparent;color:var(--texto);border-radius:6px;padding:5px 11px;font:inherit;font-size:.82rem;font-weight:500;cursor:pointer}
+    .acoes button:hover{background:var(--bg)}
+    .acoes button.perigo{color:var(--err)}.acoes button.perigo:hover{background:var(--errb);border-color:var(--err)}
+    .badge{display:inline-flex;align-items:center;gap:6px;font-size:.76rem;font-weight:600;padding:3px 10px;border-radius:999px}
+    .badge::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+    .pendente{color:var(--pend);background:var(--pendb)}.progresso{color:var(--prog);background:var(--progb)}.concluida{color:var(--ok);background:var(--okb)}
+    .vazio{grid-column:1/-1;text-align:center;padding:56px 0;color:var(--muted);border:1px dashed var(--borda);border-radius:12px}
+    .modal{position:fixed;inset:0;background:rgba(10,14,22,.55);display:none;place-items:center;padding:20px;z-index:10}
+    .modal.aberto{display:grid}
+    .modal-caixa{width:min(480px,100%);background:var(--surface);border:1px solid var(--borda);border-radius:14px;padding:24px;box-shadow:0 24px 60px rgba(0,0,0,.35)}
+    .modal-caixa h2{margin:0 0 16px;font-size:1.15rem}
+    .modal-caixa .campo{margin-bottom:14px}
+    .modal-acoes{display:flex;justify-content:flex-end;gap:10px;margin-top:6px}
+    .toasts{position:fixed;bottom:20px;right:20px;display:flex;flex-direction:column;gap:8px;z-index:20}
+    .toast{background:var(--surface);border:1px solid var(--borda);border-left:4px solid var(--ok);padding:12px 16px;border-radius:8px;font-size:.9rem;max-width:320px;box-shadow:0 8px 24px rgba(0,0,0,.18)}
+    .toast.erro{border-left-color:var(--err)}
+    @media (max-width:720px){.filtros{grid-template-columns:repeat(2,1fr)}.form-nova{grid-template-columns:1fr}}
+    @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Gerenciador de Tarefas</h1>
+      <p class="sub">Sistema CRUD com Python e Redis</p>
+    </header>
+
+    <section class="painel">
+      <h2>Nova tarefa</h2>
+      <form id="form-nova" class="form-nova">
+        <div class="campo">
+          <label for="titulo">Título</label>
+          <input id="titulo" placeholder="Ex.: Revisar relatório" maxlength="100" required>
+        </div>
+        <div class="campo">
+          <label for="status-novo">Status inicial</label>
+          <select id="status-novo">
+            <option>Pendente</option>
+            <option>Em Progresso</option>
+            <option>Concluída</option>
+          </select>
+        </div>
+        <div class="campo largo">
+          <label for="descricao">Descrição</label>
+          <textarea id="descricao" placeholder="Detalhes da tarefa (opcional)"></textarea>
+        </div>
+        <div class="form-acoes"><button class="btn" type="submit">Adicionar tarefa</button></div>
+      </form>
+    </section>
+
+    <div class="filtros" id="filtros" role="group" aria-label="Filtrar por status">
+      <button class="chip ativo" data-filtro="Todas"><span class="chip-n">0</span><span class="chip-l">Todas</span></button>
+      <button class="chip" data-filtro="Pendente"><span class="chip-n">0</span><span class="chip-l">Pendentes</span></button>
+      <button class="chip" data-filtro="Em Progresso"><span class="chip-n">0</span><span class="chip-l">Em progresso</span></button>
+      <button class="chip" data-filtro="Concluída"><span class="chip-n">0</span><span class="chip-l">Concluídas</span></button>
+    </div>
+    <div class="barra"><span id="contador" class="sub"></span></div>
+
+    <section id="lista" class="grid"></section>
+  </div>
+
+  <div id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-titulo">
+    <form id="form-editar" class="modal-caixa">
+      <h2 id="modal-titulo">Editar tarefa</h2>
+      <div class="campo">
+        <label for="edit-titulo">Título</label>
+        <input id="edit-titulo" maxlength="100" required>
+      </div>
+      <div class="campo">
+        <label for="edit-descricao">Descrição</label>
+        <textarea id="edit-descricao" rows="3"></textarea>
+      </div>
+      <div class="campo">
+        <label for="edit-status">Status</label>
+        <select id="edit-status">
+          <option>Pendente</option>
+          <option>Em Progresso</option>
+          <option>Concluída</option>
+        </select>
+      </div>
+      <div class="modal-acoes">
+        <button type="button" class="btn btn-secundario" id="cancelar">Cancelar</button>
+        <button type="submit" class="btn">Salvar alterações</button>
+      </div>
+    </form>
+  </div>
+
+  <div id="toasts" class="toasts" aria-live="polite"></div>
+
+  <script>
+    const CLASSES_STATUS = {
+      "Pendente": "pendente",
+      "Em Progresso": "progresso",
+      "Concluída": "concluida",
+    };
+ 
+    let tarefas = [];
+    let filtroAtual = "Todas";
+    let idEditando = null;
+ 
+    // Escapa caracteres perigosos antes de inserir texto no HTML
+    const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+    }[c]));
+ 
+    // Wrapper único para as chamadas ao servidor, com tratamento de erro
+    async function api(url, opcoes = {}) {
+      const resposta = await fetch(url, {
+        headers: { "Content-Type": "application/json" },
+        ...opcoes,
+      });
+      const dados = await resposta.json().catch(() => ({}));
+      if (!resposta.ok) throw new Error(dados.erro || `Erro ${resposta.status} no servidor.`);
+      return dados;
+    }
+ 
+    function toast(mensagem, tipo = "ok") {
+      const div = document.createElement("div");
+      div.className = `toast ${tipo === "erro" ? "erro" : ""}`;
+      div.textContent = mensagem;
+      document.getElementById("toasts").appendChild(div);
+      setTimeout(() => div.remove(), 3200);
+    }
+ 
+    function cardHTML(t) {
+      return `
+        <article class="card">
+          <div class="card-topo">
+            <span class="id">#${esc(t.id)}</span>
+            <span class="badge ${CLASSES_STATUS[t.status] || ""}">${esc(t.status)}</span>
+          </div>
+          <h3>${esc(t.titulo)}</h3>
+          <p>${esc(t.descricao) || "Sem descrição"}</p>
+          <footer>
+            <small>Criada em ${esc(t.data_criacao)}</small>
+            <div class="acoes">
+              <button data-acao="editar" data-id="${esc(t.id)}">Editar</button>
+              <button data-acao="excluir" data-id="${esc(t.id)}" class="perigo">Excluir</button>
+            </div>
+          </footer>
+        </article>`;
+    }
+ 
+    function render() {
+      const lista = document.getElementById("lista");
+      const visiveis = filtroAtual === "Todas"
+        ? tarefas
+        : tarefas.filter(t => t.status === filtroAtual);
+ 
+      const contagem = st => st === "Todas" ? tarefas.length : tarefas.filter(t => t.status === st).length;
+      document.querySelectorAll("#filtros .chip").forEach(c => { c.querySelector(".chip-n").textContent = contagem(c.dataset.filtro); });
+      document.getElementById("contador").textContent = `Mostrando ${visiveis.length} de ${tarefas.length} tarefa(s)`;
+
+      if (!visiveis.length) {
+        lista.innerHTML = '<div class="vazio">Nenhuma tarefa encontrada.</div>';
+        return;
+      }
+      lista.innerHTML = visiveis.map(cardHTML).join("");
+    }
+
+    async function carregar() {
+      try {
+        tarefas = await api("/tarefas");
+        render();
+      } catch (e) {
+        toast(e.message, "erro");
+      }
+    }
+
+    const atualizarCampo = (id, campo, valor) =>
+      api(`/tarefas/${id}`, { method: "PUT", body: JSON.stringify({ campo, valor }) });
+
+    // Cadastrar (com o status escolhido)
+    document.getElementById("form-nova").addEventListener("submit", async ev => {
+      ev.preventDefault();
+      const corpo = {
+        titulo: document.getElementById("titulo").value,
+        descricao: document.getElementById("descricao").value,
+        status: document.getElementById("status-novo").value,
+      };
+      try {
+        await api("/tarefas", { method: "POST", body: JSON.stringify(corpo) });
+        ev.target.reset();
+        toast("Tarefa criada!");
+        await carregar();
+      } catch (e) {
+        toast(e.message, "erro");
+      }
+    });
+
+    // Filtros por status
+    document.getElementById("filtros").addEventListener("click", ev => {
+      const chip = ev.target.closest(".chip");
+      if (!chip) return;
+      filtroAtual = chip.dataset.filtro;
+      document.querySelectorAll("#filtros .chip").forEach(c => c.classList.toggle("ativo", c === chip));
+      render();
+    });
+
+    // Botões Editar / Excluir dos cards
+    document.getElementById("lista").addEventListener("click", async ev => {
+      const btn = ev.target.closest("button[data-acao]");
+      if (!btn) return;
+      const id = Number(btn.dataset.id);
+      if (btn.dataset.acao === "editar") return abrirModal(id);
+      if (!confirm(`Excluir a tarefa ${id}?`)) return;
+      try {
+        await api(`/tarefas/${id}`, { method: "DELETE" });
+        toast("Tarefa excluída.");
+        await carregar();
+      } catch (e) {
+        toast(e.message, "erro");
+      }
+    });
+
+    // Janela de edição
+    const modal = document.getElementById("modal");
+    function abrirModal(id) {
+      const t = tarefas.find(x => x.id === id);
+      if (!t) return;
+      idEditando = id;
+      document.getElementById("edit-titulo").value = t.titulo;
+      document.getElementById("edit-descricao").value = t.descricao;
+      document.getElementById("edit-status").value = t.status;
+      modal.classList.add("aberto");
+      document.getElementById("edit-titulo").focus();
+    }
+    const fecharModal = () => { modal.classList.remove("aberto"); idEditando = null; };
+    document.getElementById("cancelar").addEventListener("click", fecharModal);
+    modal.addEventListener("click", ev => { if (ev.target === modal) fecharModal(); });
+    document.addEventListener("keydown", ev => { if (ev.key === "Escape") fecharModal(); });
+
+    document.getElementById("form-editar").addEventListener("submit", async ev => {
+      ev.preventDefault();
+      const t = tarefas.find(x => x.id === idEditando);
+      if (!t) return fecharModal();
+      const novos = {
+        titulo: document.getElementById("edit-titulo").value,
+        descricao: document.getElementById("edit-descricao").value,
+        status: document.getElementById("edit-status").value,
+      };
+      try {
+        for (const campo of Object.keys(novos)) {
+          if (novos[campo] !== t[campo]) await atualizarCampo(t.id, campo, novos[campo]);
+        }
+        toast("Tarefa atualizada!");
+        fecharModal();
+      } catch (e) {
+        toast(e.message, "erro");
+      }
+      await carregar();
+    });
+
+    carregar();
+  </script>
+</body>
+</html>
