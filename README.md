@@ -6,7 +6,7 @@ O projeto permite cadastrar, consultar, listar, atualizar e excluir tarefas, ofe
 
 O objetivo é demonstrar a integração entre Python e Redis, a implementação de operações CRUD, a organização de responsabilidades no backend e a comunicação entre uma aplicação web e um banco de dados NoSQL.
 
-## 📌 Funcionalidades
+## Funcionalidades
 
 ### Gerenciamento de tarefas (CRUD)
 
@@ -49,7 +49,7 @@ O objetivo é demonstrar a integração entre Python e Redis, a implementação 
 | JavaScript | Interações dinâmicas e comunicação com a API. |
 | redis-py | Biblioteca Python para comunicação com o Redis. |
 
-## 🏗️ Arquitetura do projeto
+##  Arquitetura do projeto
 
 A aplicação utiliza uma estrutura compartilhada de acesso aos dados, permitindo que as interfaces Web e CLI trabalhem sobre o mesmo repositório de tarefas.
 
@@ -77,7 +77,7 @@ A aplicação utiliza uma estrutura compartilhada de acesso aos dados, permitind
 
 A classe `TarefaRepository`, implementada em `crud_redis.py`, centraliza as operações de acesso aos dados. Dessa forma, as duas interfaces compartilham a mesma lógica de persistência e validação.
 
-## 📂 Estrutura do projeto
+##  Estrutura do projeto
 
 ```text
 atividadeREDISpy/
@@ -107,7 +107,7 @@ atividadeREDISpy/
 - `teste_conexao.py`: disponibiliza um teste auxiliar de conectividade com o Redis.
 - `requirements.txt`: lista as bibliotecas necessárias para executar a aplicação.
 
-## 🗄️ Armazenamento no Redis
+##  Armazenamento no Redis
 
 O Redis é utilizado como banco de dados NoSQL, armazenando cada tarefa em uma estrutura do tipo **Hash**.
 
@@ -152,7 +152,7 @@ Os status permitidos são:
 
 O sistema também realiza validações para impedir títulos vazios, campos inválidos e status não reconhecidos.
 
-## 🚀 Como executar o projeto
+##  Como executar o projeto
 
 ### 1. Pré-requisitos
 
@@ -274,7 +274,7 @@ Será apresentado um menu com as opções de cadastro, consulta, listagem, atual
 
 **Observação:** a conexão com o Redis precisa estar disponível para ambas as interfaces.
 
-## 🔗 API REST
+##  API REST
 
 A interface web se comunica com o backend por meio de requisições HTTP, utilizando endpoints disponibilizados pelo Flask.
 
@@ -306,7 +306,7 @@ A interface web se comunica com o backend por meio de requisições HTTP, utiliz
 
 A API também possui respostas de erro em formato JSON para situações como registros inexistentes, dados inválidos e indisponibilidade do Redis.
 
-## 🧠 Conceitos aplicados
+##  Conceitos aplicados
 
 O desenvolvimento do projeto envolve conceitos importantes da área de Análise e Desenvolvimento de Sistemas:
 
@@ -327,7 +327,7 @@ Este projeto foi desenvolvido como atividade prática para explorar a utilizaç�
 
 A implementação também permite compreender a comunicação entre frontend, backend e banco de dados, além da importância de organizar o código para facilitar sua manutenção e reutilização.
 
-## 🔮 Possíveis melhorias futuras
+##  Possíveis melhorias futuras
 
 - Implementação de autenticação e gerenciamento de usuários.
 - Separação das rotas em módulos utilizando Blueprints do Flask.
@@ -339,11 +339,12 @@ A implementação também permite compreender a comunicação entre frontend, ba
 - Melhorias na configuração e segurança da aplicação.
 - Documentação interativa da API.
 
-## 👨‍💻 Autor
+##  Desenvolvido em conjunto por
 
-**Arthur Pozzeti**
+- **Arthur Pozzeti**
+- **Luiz Gustavo**
 
-Estudante de Análise e Desenvolvimento de Sistemas, interessado em desenvolvimento de software, bancos de dados, integração de sistemas e tecnologias backend.
+Estudantes de Análise e Desenvolvimento de Sistemas, interessados em desenvolvimento de software, bancos de dados, integração de sistemas e segurança da informação.
 
 ---
 
